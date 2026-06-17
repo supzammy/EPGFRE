@@ -1,0 +1,41 @@
+# Byte-compiled / Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv
+ENV/
+
+# Environment variables
+.env
+
+# Temporary files
+*.tmp
+/tmp/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Model files (large – keep these on Hugging Face Space, not GitHub)
+*.joblib
+*.pkl
+*.sav
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Gradio temp files
+gradio_cached_examples/
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
