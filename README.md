@@ -4,7 +4,7 @@ Pan-genome machine learning for fluoroquinolone resistance prediction in E. coli
 # EPGFRE — E. coli Pan‑Genome Fluoroquinolone Resistance Explorer
 
 [![Open in Hugging Face](https://img.shields.io/badge/🤗-Open%20in%20Hugging%20Face-blue)](https://huggingface.co/spaces/supzammy/EPGFRE)
-[![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.20733406-blue)](https://doi.org/10.10.5281/zenodo.20733406)
+[![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.20733406-blue)](https://doi.org/10.5281/zenodo.20733406)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
@@ -16,7 +16,7 @@ The tool is designed for two distinct workflows:
 - **Explore** – a teaching sandbox with 10 SHAP‑selected genes you can toggle to see how each shifts the prediction.
 
 📊 **Live demo:** [https://huggingface.co/spaces/supzammy/EPGFRE](https://huggingface.co/spaces/supzammy/EPGFRE)  
-📄 **Data source:** Zenodo [10.5281/zenodo.20733406](https://zenodo.org/records\/10.5281/zenodo.20733406) 
+📄 **Data source:** Zenodo [10.5281/zenodo.20733406](https://doi.org/10.5281/zenodo.20733406)  
 
 
 ---
