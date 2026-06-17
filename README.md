@@ -15,7 +15,7 @@ The tool is designed for two distinct workflows:
 - **Predict** – upload a real genome matrix (CSV) and get a resistance probability, classification, driving genes, and population context.
 - **Explore** – a teaching sandbox with 10 SHAP‑selected genes you can toggle to see how each shifts the prediction.
 
-📊 **Live demo:** [https://huggingface.co/spaces/supzammy/EPGFRE](https://huggingface.co/spaces/supzammyEPGFRE)  
+📊 **Live demo:** [https://huggingface.co/spaces/supzammy/EPGFRE](https://huggingface.co/spaces/supzammy/EPGFRE)  
 📄 **Data source:** Zenodo [10.5281/zenodo.20733406](https://zenodo.org/records\/10.5281/zenodo.20733406) 
 
 
