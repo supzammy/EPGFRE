@@ -12,9 +12,8 @@ Two clearly separated flows, by design:
 
   1. PREDICT  - for people who have a real BV-BRC PGFam presence/absence
      matrix for their own genome(s). Loads the real trained model
-     (model.joblib + gene_features_list.pkl) and scores on the full
-     11,208-feature space. This is the only tab that reflects the
-     paper's headline result (AUC 0.914, 5-fold CV).
+      (model.joblib + gene_features_list.pkl) and scores on the real
+      feature space shipped with the repository.
 
   2. EXPLORE  - a teaching sandbox. No file needed. Ten SHAP-selected
      marker genes you can toggle by hand to see how the model's
@@ -117,7 +116,7 @@ def load_real_model():
         return None, None, (
             "model.joblib and/or gene_features_list.pkl were not found "
             "next to this script. The Predict tab is disabled until both "
-            "files are present \u2014 see the header of this file for how to "
+            "files are present — see the header of this file for how to "
             "produce gene_features_list.pkl from your training notebook."
         )
     try:
@@ -240,18 +239,73 @@ def run_real_prediction(file):
     if file is None:
         return "### Upload a file to begin", None, None, None, None
 
+    def load_uploaded_matrix(path):
+        try:
+            return pd.read_csv(path, index_col=0)
+        except Exception:
+            pass
+
+        import csv
+
+        with open(path, newline="", encoding="utf-8-sig") as handle:
+            reader = csv.reader(handle)
+            header = next(reader, None)
+            if header is None:
+                return pd.DataFrame()
+
+            rows = []
+            max_width = len(header)
+            for row in reader:
+                if not row:
+                    continue
+                max_width = max(max_width, len(row))
+                rows.append(row)
+
+        if not rows:
+            return pd.DataFrame()
+
+        columns = list(header) + [f"extra_{i}" for i in range(max_width - len(header))]
+        normalized_rows = [row + [""] * (max_width - len(row)) for row in rows]
+        parsed = pd.DataFrame(normalized_rows, columns=columns)
+        return parsed.set_index(parsed.columns[0])
+
     try:
-        df = pd.read_csv(file.name, index_col=0)
+        df = load_uploaded_matrix(file.name)
     except Exception as exc:
         return f"### Could not read file\n\n{exc}", None, None, None, None
 
     if df.empty:
         return "### The uploaded file has no rows", None, None, None, None
 
+    def coerce_gene_presence(value):
+        if pd.isna(value):
+            return 0.0
+        if isinstance(value, str):
+            text = value.strip().lower()
+            if text in {"true", "t", "yes", "y", "present", "1"}:
+                return 1.0
+            if text in {"false", "f", "no", "n", "absent", "0", ""}:
+                return 0.0
+        try:
+            return 1.0 if float(value) >= 0.5 else 0.0
+        except Exception:
+            return 0.0
+
     missing = [f for f in REAL_FEATURES if f not in df.columns]
     coverage = 1 - len(missing) / len(REAL_FEATURES)
     row = df.iloc[0]
-    vec = np.array([[float(row.get(f, 0)) for f in REAL_FEATURES]])
+    vec = np.array([[coerce_gene_presence(row[f]) if f in row.index else 0 for f in REAL_FEATURES]])
+    
+    # DEBUG: Log what's being processed
+    print(f"\n{'='*60}")
+    print(f"DEBUG: File processed")
+    print(f"File name: {file.name}")
+    print(f"Columns in CSV: {df.columns.tolist()}")
+    print(f"Expected features: {REAL_FEATURES}")
+    print(f"Missing features: {missing} ({len(missing)}/{len(REAL_FEATURES)})")
+    print(f"Coverage: {coverage*100:.1f}%")
+    print(f"Vector: {vec}")
+    print(f"{'='*60}\n")
 
     prob = float(REAL_MODEL.predict_proba(vec)[0, 1])
     status = "RESISTANT" if prob >= 0.5 else "SUSCEPTIBLE"
@@ -272,8 +326,8 @@ def run_real_prediction(file):
         f"Feature coverage: **{coverage * 100:.1f}%** of the {len(REAL_FEATURES):,} "
         f"gene families the model expects were found in your file "
         f"({len(missing)} missing columns were treated as absent).\n\n"
-        f"Model: full pan-genome random forest, {FULL_MODEL_N_FEATURES} features, "
-        f"trained on {FULL_MODEL_N_GENOMES} genomes (5-fold CV AUC {FULL_MODEL_AUC})."
+        f"Model: RandomForestClassifier loaded from model.joblib with {len(REAL_FEATURES)} "
+        f"real gene features."
     )
 
     bar = gene_impact_chart(active_genes, weights, EXPLORE_LABELS)
